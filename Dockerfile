@@ -1,3 +1,10 @@
+# The default obtained on 05/07/2021 from /universe/docker-images/ubuntu/18.04/BUILD
+ARG IMAGE_SHA=sha256:a71f06430a77e1134d3cfc9954430d72fd0a9dec840514317b300061e87bb814
+# Set Default Build Platform as Linux AMD64
+ARG BUILDPLATFORM="linux/amd64"
+# Set base image to internal ubuntu image with image sha version generated in the update script.
+FROM registry.dev.databricks.com/universe/db-ubuntu-18.04@${IMAGE_SHA} AS final
+
 ####################################################################################################
 # Builder image
 # Initial stage which pulls prepares build dependencies and CLI tooling we need for our final image
@@ -22,7 +29,7 @@ RUN cd ${GOPATH}/src/dummy && \
     golangci-lint run
 
 ####################################################################################################
-# UI build stage
+# Argo Rollouts UI Docker Image
 ####################################################################################################
 FROM --platform=$BUILDPLATFORM docker.io/library/node:12.18.4 as argo-rollouts-ui
 
@@ -67,7 +74,7 @@ ARG MAKE_TARGET="controller plugin"
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH make ${MAKE_TARGET}
 
 ####################################################################################################
-# Kubectl plugin image
+# Kubectl Argo Rollouts Plugin Docker Image
 ####################################################################################################
 FROM docker.io/library/ubuntu:20.10 as kubectl-argo-rollouts
 
@@ -82,17 +89,20 @@ ENTRYPOINT ["/bin/kubectl-argo-rollouts"]
 CMD ["dashboard"]
 
 ####################################################################################################
-# Final image
+# Final Argo Docker Image
 ####################################################################################################
-FROM gcr.io/distroless/static-debian11
+FROM final
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get autoclean -y \
+    && apt-get install -y rsyslog \
+    && apt-get install -y ca-certificates \
+    && apt-get install -y logrotate \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /tmp/* /var/tmp/* \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=argo-rollouts-build /go/src/github.com/argoproj/argo-rollouts/dist/rollouts-controller /bin/
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-
-# Use numeric user, allows kubernetes to identify this user as being
-# non-root when we use a security context with runAsNonRoot: true
-USER 999
-
-WORKDIR /home/argo-rollouts
-
-ENTRYPOINT [ "/bin/rollouts-controller" ]
