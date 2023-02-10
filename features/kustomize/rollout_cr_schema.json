@@ -4165,6 +4165,10 @@
                                                 ],
                                                 "type": "object"
                                             },
+                                            "plugin": {
+                                                "type": "object",
+                                                "x-kubernetes-preserve-unknown-fields": true
+                                            },
                                             "prometheus": {
                                                 "properties": {
                                                     "address": {
@@ -4212,6 +4216,10 @@
                                                     },
                                                     "insecure": {
                                                         "type": "boolean"
+                                                    },
+                                                    "jsonBody": {
+                                                        "type": "object",
+                                                        "x-kubernetes-preserve-unknown-fields": true
                                                     },
                                                     "jsonPath": {
                                                         "type": "string"
@@ -8429,6 +8437,10 @@
                                                 ],
                                                 "type": "object"
                                             },
+                                            "plugin": {
+                                                "type": "object",
+                                                "x-kubernetes-preserve-unknown-fields": true
+                                            },
                                             "prometheus": {
                                                 "properties": {
                                                     "address": {
@@ -8476,6 +8488,10 @@
                                                     },
                                                     "insecure": {
                                                         "type": "boolean"
+                                                    },
+                                                    "jsonBody": {
+                                                        "type": "object",
+                                                        "x-kubernetes-preserve-unknown-fields": true
                                                     },
                                                     "jsonPath": {
                                                         "type": "string"
@@ -12693,6 +12709,10 @@
                                                 ],
                                                 "type": "object"
                                             },
+                                            "plugin": {
+                                                "type": "object",
+                                                "x-kubernetes-preserve-unknown-fields": true
+                                            },
                                             "prometheus": {
                                                 "properties": {
                                                     "address": {
@@ -12740,6 +12760,10 @@
                                                     },
                                                     "insecure": {
                                                         "type": "boolean"
+                                                    },
+                                                    "jsonBody": {
+                                                        "type": "object",
+                                                        "x-kubernetes-preserve-unknown-fields": true
                                                     },
                                                     "jsonPath": {
                                                         "type": "string"
